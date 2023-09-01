@@ -1,0 +1,44 @@
+### Get Users
+GET http://localhost:1234/users
+
+### Get User by ID
+GET http://localhost:1234/users/1
+
+### Create user
+POST http://localhost:1234/users
+Content-Type: application/json
+
+{
+  "name": "Axel Galea",
+  "email": "akselgalea@gmail.ar",
+  "password": "password",
+  "password_confirmation": "password"
+}
+
+### Update user
+PATCH http://localhost:1234/users/1
+Content-Type: application/json
+
+{
+  "name": "Axel Ormeño",
+  "email": "ormenhoaxel@gmail.com"
+}
+
+### Update user password
+PATCH http://localhost:1234/users/1/reset-password
+Content-Type: application/json
+
+{
+  "oldPassword": "password",
+  "password": "password",
+  "password_confirmation": "passwor"
+}
+
+### Login user
+POST http://localhost:1234/users/login
+Content-Type: application/json
+
+{
+  "email": "akselgalea@gmail.com",
+  "password": "password"
+}

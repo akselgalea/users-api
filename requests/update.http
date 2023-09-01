@@ -1,0 +1,44 @@
+### Update user
+PATCH http://localhost:1234/users/1
+Content-Type: application/json
+
+{
+  "name": "Axel Ormeño",
+  "email": "ormenhoaxel@gmail.com"
+}
+
+### Update user empty
+PATCH http://localhost:1234/users/1
+Content-Type: application/json
+
+{
+}
+
+### Update user wrong type
+PATCH http://localhost:1234/users/1
+Content-Type: application/json
+
+{
+  "name": 1,
+  "email": "ormenhoaxel@gmail.com"
+}
+
+### Update user non existent column
+# It only uses the user schema columns
+PATCH http://localhost:1234/users/1
+Content-Type: application/json
+
+{
+  "sql": "select * from users",
+  "nam": 1,
+  "email": "ormenhoaxel@gmail.com"
+}
+
+### Update user (user doesnt exists)
+PATCH http://localhost:1234/users/100
+Content-Type: application/json
+
+{
+  "name": "Axel asd",
+  "email": "ormenhoaxel@gmail.com"
+}
