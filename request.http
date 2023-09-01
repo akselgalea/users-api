@@ -10,13 +10,13 @@ Content-Type: application/json
 
 {
   "name": "Axel Galea",
-  "email": "akselgalea@gmail.ar",
+  "email": "akselgalea@gmail.co",
   "password": "password",
   "password_confirmation": "password"
 }
 
 ### Update user
-PATCH http://localhost:1234/users/1
+PATCH http://localhost:1234/users/7
 Content-Type: application/json
 
 {
@@ -25,14 +25,23 @@ Content-Type: application/json
 }
 
 ### Update user password
-PATCH http://localhost:1234/users/1/reset-password
+PATCH http://localhost:1234/users/7/reset-password
 Content-Type: application/json
 
 {
   "oldPassword": "password",
   "password": "password",
-  "password_confirmation": "passwor"
+  "password_confirmation": "password"
 }
+
+### Delete user
+DELETE http://localhost:1234/users/7
+Content-Type: application/json
+
+{
+  "password": "password"
+}
+
 
 ### Login user
 POST http://localhost:1234/users/login

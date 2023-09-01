@@ -1,6 +1,6 @@
 import express, { json } from 'express'
-import { corsMiddleware } from './middlewares/cors.js'
-import { userRouter } from './routes/user.js'
+import { corsMiddleware } from './src/middlewares/cors.js'
+import { userRouter } from './src/routes/user.js'
 
 const PORT = process.env.PORT ?? 1234
 

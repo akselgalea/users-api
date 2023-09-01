@@ -60,10 +60,30 @@ export class UserModel {
 
       if (!match) throw new Error('The passwords dont match')
 
+      if (oldPassword === password) throw new Error('The new password must be different than your current password')
+
       const passwordHash = await bcrypt.hash(password, 10)
       const [updateQuery] = await pool.query('update users set password = ? where id = ?', [passwordHash, id])
 
       return updateQuery.affectedRows
+    } catch (error) {
+      return { error: error.message }
+    }
+  }
+
+  static async delete ({ id, password }) {
+    try {
+      const [user] = await pool.query('select password from users where id = ?', [id])
+
+      if (!user.length) return 0
+
+      const match = await bcrypt.compare(password, user[0].password)
+
+      if (!match) throw new Error('The passwords dont match')
+
+      const [res] = await pool.query('delete from users where id = ?', [id])
+
+      return res.affectedRows
     } catch (error) {
       return { error: error.message }
     }

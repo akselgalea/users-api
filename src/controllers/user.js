@@ -1,5 +1,5 @@
 import { UserModel } from '../models/database/user.js'
-import { validatePartialUser, validatePassword, validateUser } from '../schemas/user.js'
+import { validatePartialUser, validateNewPassword, validateUser } from '../schemas/user.js'
 
 export class UserController {
   static async index (req, res) {
@@ -53,7 +53,7 @@ export class UserController {
   }
 
   static async updatePassword (req, res) {
-    const validated = validatePassword(req.body)
+    const validated = validateNewPassword(req.body)
 
     if (!validated.success) {
       return res.status(400).json({ error: validated.error.issues })
@@ -65,19 +65,24 @@ export class UserController {
     if (result === 0) return res.status(404).json({ message: 'User not found' })
     if (result.error) { return res.status(400).json(result) }
 
-    res.json({ message: 'User pasword updated successfully' })
+    res.json({ message: 'User password updated successfully' })
   }
 
   static async delete (req, res) {
     const { id } = req.params
-    const result = await UserModel.delete({ id })
+    const result = await UserModel.delete({ id, ...req.body })
 
+    if (result === 0) return res.status(404).json({ message: 'User not found' })
     if (result.error) { return res.status(500).json(result) }
 
     res.json({ message: 'User deleted successfully' })
   }
 
   static async login (req, res) {
+    const validated = validatePartialUser(req.body)
+
+    if (!validated.success) return res.status(400).json({ error: validated.error.issues })
+
     const result = await UserModel.login({ ...req.body })
 
     if (result.error) { return res.status(400).json(result) }
