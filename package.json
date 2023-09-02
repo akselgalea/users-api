@@ -5,7 +5,7 @@
   "main": "app.js",
   "type": "module",
   "scripts": {
-    "dev": "node --watch ./app.js",
+    "dev": "nodemon ./app.js",
     "start": "node ./app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -23,7 +23,7 @@
     "zod": "3.22.2"
   },
   "devDependencies": {
-    "picocolors": "1.0.0",
+    "nodemon": "3.0.1",
     "standard": "17.1.0"
   },
   "eslintConfig": {

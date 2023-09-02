@@ -1,4 +1,5 @@
-import { multipleColumnsInput } from '../../utils.js'
+import { RequestError } from '../../../utils/errors.js'
+import { multipleColumnsInput } from '../../../utils/input.js'
 import { pool } from './mysql/connection.js'
 import bcrypt from 'bcrypt'
 
@@ -6,23 +7,18 @@ const SALT_ROUNDS = 10
 
 export class UserModel {
   static async getAll ({ filter } = {}) {
-    try {
-      const [users] = await pool.query('select id, name, email, email_verified, remember_token from users')
+    const [users] = await pool.query('select id, name, email, email_verified, remember_token from users')
 
-      return users
-    } catch (error) {
-      return { error: error.message }
-    }
+    return users
   }
 
-  static async get ({ id }) {
-    try {
-      const [user] = await pool.query('select id, name, email, email_verified, remember_token from users where id = ?', [id])
+  static async get ({ id, email }) {
+    const searchOption = email ? 'email' : 'id'
+    const searchValue = email ?? id
 
-      return user
-    } catch (error) {
-      return { error: error.message }
-    }
+    const [user] = await pool.query(`select * from users where ${searchOption} = ?`, [searchValue])
+
+    return user[0] || null
   }
 
   static async create ({ input }) {
@@ -30,82 +26,52 @@ export class UserModel {
       const passwordHash = await bcrypt.hash(input.password, SALT_ROUNDS)
       const [res] = await pool.query('insert into users (name, email, password) values (?, ?, ?)', [input.name, input.email, passwordHash])
 
-      return res
+      return res.affectedRows
     } catch (error) {
-      if (error.message.includes('Duplicate') && error.message.includes('email')) { return { error: 'This email is already in use' } }
+      if (error.message.includes('Duplicate') && error.message.includes('email')) {
+        throw new RequestError('This email is already in use', 400)
+      }
 
-      return { error: error.message }
+      throw new Error(error)
     }
   }
 
   static async update ({ id, input }) {
-    try {
-      const { columns, values } = multipleColumnsInput(input)
-      const [res] = await pool.query(`update users set ${columns} where id = ?`, [...values, id])
+    const { columns, values } = multipleColumnsInput(input)
+    const [res] = await pool.query(`update users set ${columns} where id = ?`, [...values, id])
 
-      return res.affectedRows
-    } catch (error) {
-      return { error: error.message }
-    }
+    return res.affectedRows
   }
 
   static async updatePassword ({ id, input }) {
-    try {
-      const { oldPassword, password } = input
-      const [res] = await pool.query('select password from users where id = ?', [id])
+    const { oldPassword, password } = input
+    const [res] = await pool.query('select password from users where id = ?', [id])
 
-      if (!res.length) return 0
+    if (!res.length) return 0
 
-      const match = await bcrypt.compare(oldPassword, res[0].password)
+    const match = await bcrypt.compare(oldPassword, res[0].password)
 
-      if (!match) throw new Error('The passwords dont match')
+    if (!match) throw new RequestError('The passwords dont match', 400)
 
-      if (oldPassword === password) throw new Error('The new password must be different than your current password')
+    if (oldPassword === password) throw new RequestError('The new password must be different than your current password', 400)
 
-      const passwordHash = await bcrypt.hash(password, 10)
-      const [updateQuery] = await pool.query('update users set password = ? where id = ?', [passwordHash, id])
+    const passwordHash = await bcrypt.hash(password, 10)
+    const [updateQuery] = await pool.query('update users set password = ? where id = ?', [passwordHash, id])
 
-      return updateQuery.affectedRows
-    } catch (error) {
-      return { error: error.message }
-    }
+    return updateQuery.affectedRows
   }
 
   static async delete ({ id, password }) {
-    try {
-      const [user] = await pool.query('select password from users where id = ?', [id])
+    const [user] = await pool.query('select password from users where id = ?', [id])
 
-      if (!user.length) return 0
+    if (!user.length) return 0
 
-      const match = await bcrypt.compare(password, user[0].password)
+    const match = await bcrypt.compare(password, user[0].password)
 
-      if (!match) throw new Error('The passwords dont match')
+    if (!match) throw new Error('The passwords dont match')
 
-      const [res] = await pool.query('delete from users where id = ?', [id])
+    const [res] = await pool.query('delete from users where id = ?', [id])
 
-      return res.affectedRows
-    } catch (error) {
-      return { error: error.message }
-    }
-  }
-
-  static async login ({ email, password }) {
-    try {
-      const error = { error: 'These credentials dont match our records' }
-      const [res] = await pool.query('select * from users where email = ?', [email])
-      const user = res[0] ?? null
-
-      if (!user) return error
-      const match = await bcrypt.compare(password, user.password)
-
-      if (match) {
-        delete user.password
-        return user
-      }
-
-      return error
-    } catch (error) {
-      return { error: error.message }
-    }
+    return res.affectedRows
   }
 }

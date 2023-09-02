@@ -2,7 +2,7 @@
 GET http://localhost:1234/users
 
 ### Get User by ID
-GET http://localhost:1234/users/1
+GET http://localhost:1234/users/17
 
 ### Create user
 POST http://localhost:1234/users
@@ -10,7 +10,7 @@ Content-Type: application/json
 
 {
   "name": "Axel Galea",
-  "email": "akselgalea@gmail.co",
+  "email": "akselgalea@gmail.cl",
   "password": "password",
   "password_confirmation": "password"
 }
@@ -25,7 +25,7 @@ Content-Type: application/json
 }
 
 ### Update user password
-PATCH http://localhost:1234/users/7/reset-password
+PATCH http://localhost:1234/users/31/reset-password
 Content-Type: application/json
 
 {
@@ -35,7 +35,7 @@ Content-Type: application/json
 }
 
 ### Delete user
-DELETE http://localhost:1234/users/7
+DELETE http://localhost:1234/users/14
 Content-Type: application/json
 
 {
@@ -48,6 +48,6 @@ POST http://localhost:1234/users/login
 Content-Type: application/json
 
 {
-  "email": "akselgalea@gmail.com",
+  "email": "akselgalea@gmail.cl",
   "password": "password"
 }

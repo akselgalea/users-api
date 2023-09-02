@@ -1,11 +1,9 @@
 import { UserModel } from '../models/database/user.js'
-import { validatePartialUser, validateNewPassword, validateUser } from '../schemas/user.js'
+import { validateNewPassword, validateCreateUser, validatePartialUserUpdate } from '../schemas/user.js'
 
 export class UserController {
   static async index (req, res) {
     const result = await UserModel.getAll()
-
-    if (result.error) { return res.status(500).json(result) }
 
     res.json(result)
   }
@@ -15,7 +13,6 @@ export class UserController {
     const result = await UserModel.get({ id })
 
     if (result) {
-      if (result.error) return res.status(500).json(result)
       return res.json(result)
     }
 
@@ -23,21 +20,19 @@ export class UserController {
   }
 
   static async create (req, res) {
-    const validated = validateUser(req.body)
+    const validated = validateCreateUser(req.body)
 
     if (!validated.success) {
       return res.status(400).json({ error: validated.error.issues })
     }
 
-    const result = await UserModel.create({ input: validated.data })
+    await UserModel.create({ input: validated.data })
 
-    if (result.error) { return res.status(400).json(result) }
-
-    res.status(201).json({ message: 'User created successfully' })
+    return res.status(201).json({ message: 'User created successfully' })
   }
 
   static async update (req, res) {
-    const validated = validatePartialUser(req.body)
+    const validated = validatePartialUserUpdate(req.body)
 
     if (!validated.success) {
       return res.status(400).json({ error: validated.error.issues })
@@ -47,7 +42,6 @@ export class UserController {
     const result = await UserModel.update({ id, input: validated.data })
 
     if (result === 0) return res.status(404).json({ message: 'User not found' })
-    if (result.error) { return res.status(400).json(result) }
 
     res.json({ message: 'User updated successfully' })
   }
@@ -63,7 +57,6 @@ export class UserController {
     const result = await UserModel.updatePassword({ id, input: validated.data })
 
     if (result === 0) return res.status(404).json({ message: 'User not found' })
-    if (result.error) { return res.status(400).json(result) }
 
     res.json({ message: 'User password updated successfully' })
   }
@@ -73,24 +66,7 @@ export class UserController {
     const result = await UserModel.delete({ id, ...req.body })
 
     if (result === 0) return res.status(404).json({ message: 'User not found' })
-    if (result.error) { return res.status(500).json(result) }
 
     res.json({ message: 'User deleted successfully' })
-  }
-
-  static async login (req, res) {
-    const validated = validatePartialUser(req.body)
-
-    if (!validated.success) return res.status(400).json({ error: validated.error.issues })
-
-    const result = await UserModel.login({ ...req.body })
-
-    if (result.error) { return res.status(400).json(result) }
-
-    res.json(result)
-  }
-
-  static async logout (req, res) {
-    console.log(req.body)
   }
 }
