@@ -1,9 +1,10 @@
 import { UserModel } from '../models/database/user.js'
-import { validateNewPassword, validateCreateUser, validatePartialUserUpdate } from '../schemas/user.js'
+import { validateNewPassword, validateCreateUser, validatePartialUserUpdate, validateUserQuery } from '../schemas/user.js'
 
 export class UserController {
   static async index (req, res) {
-    const result = await UserModel.getAll()
+    const validated = validateUserQuery(req.query)
+    const result = await UserModel.getAll({ filters: validated.data })
 
     res.json(result)
   }

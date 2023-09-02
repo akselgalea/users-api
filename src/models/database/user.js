@@ -1,13 +1,19 @@
 import { RequestError } from '../../../utils/errors.js'
-import { multipleColumnsInput } from '../../../utils/input.js'
+import { updateMultipleColumnsInput, searchMultipleColumnsInput } from '../../../utils/input.js'
 import { pool } from './mysql/connection.js'
 import bcrypt from 'bcrypt'
 
 const SALT_ROUNDS = 10
 
 export class UserModel {
-  static async getAll ({ filter } = {}) {
-    const [users] = await pool.query('select id, name, email, email_verified, remember_token from users')
+  static async getAll ({ filters } = {}) {
+    const isFiltered = Object.keys(filters).length
+    const { columns, values } = isFiltered ? searchMultipleColumnsInput(filters) : {}
+
+    const [users] =
+      isFiltered
+        ? await pool.query(`select id, name, email from users where ${columns}`, values)
+        : await pool.query('select id, name, email from users')
 
     return users
   }
@@ -37,7 +43,7 @@ export class UserModel {
   }
 
   static async update ({ id, input }) {
-    const { columns, values } = multipleColumnsInput(input)
+    const { columns, values } = updateMultipleColumnsInput(input)
     const [res] = await pool.query(`update users set ${columns} where id = ?`, [...values, id])
 
     return res.affectedRows
