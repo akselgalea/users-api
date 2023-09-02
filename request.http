@@ -1,5 +1,5 @@
 ### Get Users
-GET http://localhost:1234/users?name=Yennifer ormeño&email=.com&doenstExists=aaaaa
+GET http://localhost:1234/users?search=gmail.cl
 
 ### Get User by ID
 GET http://localhost:1234/users/17
@@ -9,8 +9,8 @@ POST http://localhost:1234/users
 Content-Type: application/json
 
 {
-  "name": "Axel Galea",
-  "email": "akselgalea@gmail.cl",
+  "name": "Yennifer Aros",
+  "email": "yenni123@gmail.cl",
   "password": "password",
   "password_confirmation": "password"
 }
