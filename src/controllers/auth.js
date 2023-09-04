@@ -22,14 +22,20 @@ export class AuthController {
     delete user.password
 
     const userForToken = {
-      id: user.id,
+      userId: user.id,
       name: user.name,
       email: user.email
     }
 
     const token = jwt.sign(userForToken, process.env.JWT_SECRET)
 
-    res.json(user)
+    res.json({
+      user: {
+        name: user.name,
+        email: user.email,
+        token
+      }
+    })
   }
 
   static async logout (req, res) {

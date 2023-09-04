@@ -4,13 +4,25 @@ GET http://localhost:1234/users?search=gmail.cl
 ### Get User by ID
 GET http://localhost:1234/users/17
 
-### Create user
-POST http://localhost:1234/users
+### Register user
+POST http://localhost:1234/users/register
 Content-Type: application/json
 
 {
   "name": "Yennifer Aros",
-  "email": "yenni123@gmail.cl",
+  "email": "yenni123@gmail.cooo",
+  "password": "password",
+  "password_confirmation": "password"
+}
+
+### Create user
+POST http://localhost:1234/users
+Content-Type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMxLCJuYW1lIjoiQXhlbCBHYWxlYSIsImVtYWlsIjoiYWtzZWxnYWxlYUBnbWFpbC5jbCIsImlhdCI6MTY5MzgzNjE5MX0.hHw-E2bLWPvjhZYRAztnZBdbbJQm_tV4huiP8LeHMBE
+
+{
+  "name": "Yennifer Aros",
+  "email": "yenni123@gmail.com",
   "password": "password",
   "password_confirmation": "password"
 }
