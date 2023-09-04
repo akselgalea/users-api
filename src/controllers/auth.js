@@ -27,7 +27,10 @@ export class AuthController {
       email: user.email
     }
 
-    const token = jwt.sign(userForToken, process.env.JWT_SECRET)
+    const token = jwt.sign(
+      userForToken,
+      process.env.JWT_SECRET
+    )
 
     res.json({
       user: {
